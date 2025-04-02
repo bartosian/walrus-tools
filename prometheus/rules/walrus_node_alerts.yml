@@ -40,15 +40,15 @@ groups:
             No new persisted events have been recorded in the last 15 minutes on the Walrus Storage Node,
             or the metric is unavailable, indicating a persistence stall or failure.
 
-      - alert: WalrusStorageNode_ShardsOwnedZero
-        expr: walrus_shards_owned{service="storage_node"} == 0 or absent(walrus_shards_owned{service="storage_node"})
+      - alert: WalrusStorageNode_LowSuiBalance
+        expr: walrus_sui_balance_mist{service="storage_node"} / 1e9 < 1 or absent(walrus_sui_balance_mist{service="storage_node"})
         for: 5m
         labels:
           severity: critical
           service: walrus_storage_node
-          alert_type: shards_owned_zero
+          alert_type: low_sui_balance
         annotations:
-          summary: "No Shards Owned by Walrus Storage Node"
+          summary: "Low Sui Balance on Walrus Storage Node"
           description: |
-            The Walrus Storage Node currently owns zero shards or the metric is absent,
-            indicating either a failure or removal from the active committee set.
+            The Sui balance on the Walrus Storage Node has dropped below 1 Sui or is missing for more than 5 minutes.
+            This may indicate a critical funding issue preventing correct Storage Node operations.
